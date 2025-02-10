@@ -105,9 +105,17 @@ messageInput.addEventListener('keypress', (e) => {
   if (e.key === 'Enter') sendMessage();
 });
 
+// 固定内容定义
+const FIXED_CONTENT = '请回答以下问题，如果句子太长注意分句：\n';
+
 // 发送消息
 async function sendMessage() {
-  const message = messageInput.value.trim();
+  console.log("Starting sendMessage");
+  let message = messageInput.value.trim();
+  
+  // 拼接固定内容
+  message = FIXED_CONTENT + message;
+  
   const apiKey = localStorage.getItem('api-key');
   const provider = providerSelect.value;
   const model = localStorage.getItem('model');
@@ -125,6 +133,14 @@ async function sendMessage() {
 
   const assistantMessageContainer = createMessageElement('', false);
   chatHistory.appendChild(assistantMessageContainer);
+
+  // 构建消息数组
+  const messages = [
+    {
+      role: "user",
+      content: message
+    }
+  ];
   
   try {
 
@@ -136,10 +152,7 @@ async function sendMessage() {
       },
       body: JSON.stringify({
         model: model,
-        messages: [{
-          role: 'user',
-          content: message
-        }],
+        messages: messages,
         temperature: 0.7,
         stream: true
       })
