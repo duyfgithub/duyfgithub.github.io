@@ -143,6 +143,22 @@ button:hover {
     }
 }
 
+/* iOS-specific styles */
+@supports (-webkit-touch-callout: none) {
+    body {
+        padding-top: env(safe-area-inset-top);
+        padding-bottom: env(safe-area-inset-bottom);
+    }
+    
+    .header {
+        padding-top: calc(15px + env(safe-area-inset-top));
+    }
+    
+    .chat-container {
+        height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+    }
+}
+
 @media (max-width: 768px) {
     .container {
         padding: 10px;
