@@ -59,7 +59,11 @@ function createMessageElement(content, isUser = true) {
 
 // 滚动到底部
 function scrollToBottom() {
-  chatHistory.scrollTop = chatHistory.scrollHeight;
+    const threshold = 50; // 距离底部的阈值
+    const isNearBottom = chatHistory.scrollHeight - chatHistory.scrollTop - chatHistory.clientHeight <= threshold;
+    if (isNearBottom) {
+        chatHistory.scrollTop = chatHistory.scrollHeight;
+    }
 }
 
 // 显示配置模态框
@@ -109,7 +113,7 @@ messageInput.addEventListener('keypress', (e) => {
 document.getElementById('cancelBtn').addEventListener('click', cancelMessage);
 
 // 固定内容定义
-const FIXED_CONTENT = '请回答以下问题，如果句子太长注意分句,另外用markdown组织回答内容：\n';
+const FIXED_CONTENT = '请回答以下问题，如果句子太长注意分句，另外用markdown组织回答内容：\n';
 
 // AbortController实例
 let abortController;
