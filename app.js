@@ -53,7 +53,7 @@ function handleProviderChange() {
 function createMessageElement(content, isUser = true) {
   const div = document.createElement('div');
   div.className = `message ${isUser ? 'user-message' : 'assistant-message'}`;
-  div.innerHTML = content.replace(/\n/g, '<br>');
+  div.innerHTML = marked.parse(content);
   return div;
 }
 
@@ -105,11 +105,33 @@ messageInput.addEventListener('keypress', (e) => {
   if (e.key === 'Enter') sendMessage();
 });
 
+// 绑定取消按钮点击事件
+document.getElementById('cancelBtn').addEventListener('click', cancelMessage);
+
 // 固定内容定义
 const FIXED_CONTENT = '请回答以下问题，如果句子太长注意分句：\n';
 
+// AbortController实例
+let abortController;
+
+// 取消消息
+function cancelMessage() {
+    if (abortController) {
+        abortController.abort();
+        abortController = null;
+    }
+    sendBtn.disabled = false;
+    messageInput.disabled = false;
+    cancelBtn.style.display = 'none';
+}
+
 // 发送消息
 async function sendMessage() {
+    // 初始化AbortController
+    abortController = new AbortController();
+    sendBtn.disabled = true;
+    messageInput.disabled = true;
+    cancelBtn.style.display = 'inline-block';
   console.log("Starting sendMessage");
   let message = messageInput.value.trim();
   
@@ -145,10 +167,11 @@ async function sendMessage() {
   try {
 
     const response = await fetch(API_PROVIDERS[provider].endpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`
+        method: 'POST',
+        signal: abortController.signal,
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`
       },
       body: JSON.stringify({
         model: model,
@@ -187,7 +210,7 @@ async function sendMessage() {
                   responseText += jsonData.choices[0].delta.content;
                 }
                 // 使用 innerHTML 保持格式
-                markdownContainer.innerHTML = responseText;
+                markdownContainer.innerHTML = marked.parse(responseText);
                 scrollToBottom();
               } else if (jsonData.error) {
                 throw new Error(jsonData.error.message);
@@ -203,7 +226,20 @@ async function sendMessage() {
       }
     }
   } catch (error) {
-    assistantMessageContainer.textContent = `错误：${error.message}`;
+      if (error.name === 'AbortError') {
+          assistantMessageContainer.textContent = '操作已取消';
+          console.log('请求被取消');
+      } else {
+          assistantMessageContainer.textContent = `错误：${error.message}`;
+          console.error('请求失败', error);
+      }
+      sendBtn.disabled = false;
+      messageInput.disabled = false;
+      cancelBtn.style.display = 'none';
+      messageInput.focus();
   }
+  sendBtn.disabled = false;
+  messageInput.disabled = false;
+  cancelBtn.style.display = 'none';
   scrollToBottom();
 }
