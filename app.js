@@ -106,8 +106,6 @@ messageInput.addEventListener('keypress', (e) => {
 });
 
 // 发送消息
-const SYSTEM_PROMPT = "你是一个智能助手，希望将推理内容和推理结果分段表述，中间隔些#########，用中文回答用户的问题。";
-
 async function sendMessage() {
   const message = messageInput.value.trim();
   const apiKey = localStorage.getItem('api-key');
@@ -127,18 +125,6 @@ async function sendMessage() {
 
   const assistantMessageContainer = createMessageElement('', false);
   chatHistory.appendChild(assistantMessageContainer);
-
-  // 构建消息数组，包含系统Prompt和用户消息
-  const messages = [
-    {
-      role: "system",
-      content: SYSTEM_PROMPT
-    },
-    {
-      role: "user",
-      content: message
-    }
-  ];
   
   try {
 
@@ -150,7 +136,10 @@ async function sendMessage() {
       },
       body: JSON.stringify({
         model: model,
-        messages: messages,
+        messages: [{
+          role: 'user',
+          content: message
+        }],
         temperature: 0.7,
         stream: true
       })
