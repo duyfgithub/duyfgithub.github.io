@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能对话助手</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>智能对话助手</h1>
+            <button id="showConfigBtn">配置API</button>
+        </div>
+        
+        <div id="configModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>配置API</h2>
+                
+                <div class="form-group">
+                    <label for="providerSelect">API提供商</label>
+                    <select id="providerSelect">
+                        <option value="DEEPSEEK">DeepSeek</option>
+                        <option value="ALYUN">阿里云</option>
+                    </select>
+                </div>
+
+                <div id="modelSelectGroup" class="form-group" style="display: block;">
+                    <label for="modelSelect">大模型版本</label>
+                    <select id="modelSelect">
+                        <option value="deepseek-chat">deepseek-chat</option>
+                        <option value="deepseek-reasoner">deepseek-reasoner</option>
+                    </select>
+                </div>
+
+
+                <div class="form-group">
+                    <label for="apiKeyInput">API密钥</label>
+                    <input type="password" id="apiKeyInput" placeholder="请输入API密钥">
+                </div>
+
+                <div class="button-group">
+                    <button id="saveConfigBtn">保存配置</button>
+                </div>
+
+                <div id="testResult" class="test-result"></div>
+            </div>
+        </div>
+
+        <div class="chat-container">
+            <div id="chatHistory" class="chat-history"></div>
+            <div class="input-area">
+                <input type="text" id="messageInput" placeholder="请输入消息...">
+                <button id="sendBtn">发送</button>
+            </div>
+        </div>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
