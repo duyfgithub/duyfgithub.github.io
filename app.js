@@ -109,7 +109,7 @@ messageInput.addEventListener('keypress', (e) => {
 document.getElementById('cancelBtn').addEventListener('click', cancelMessage);
 
 // 固定内容定义
-const FIXED_CONTENT = '请回答以下问题，如果句子太长注意分句：\n';
+const FIXED_CONTENT = '请回答以下问题，如果句子太长注意分句,另外用markdown组织回答内容：\n';
 
 // AbortController实例
 let abortController;
