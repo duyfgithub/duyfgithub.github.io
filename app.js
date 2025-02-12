@@ -1,14 +1,14 @@
 // API配置
-const API_PROVIDERS = {
+const API_PROVIDERS = Object.freeze({
   DEEPSEEK: {
     endpoint: 'https://api.deepseek.com/chat/completions',
     models: ['deepseek-chat', 'deepseek-reasoner']
   },
   ALYUN: {
-    endpoint: 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
+    endpoint: 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions', 
     models: ['deepseek-r1', 'deepseek-v3', 'qwen-plus', 'qwen-max']
   }
-};
+});
 
 // 获取DOM元素
 const chatHistory = document.getElementById('chatHistory');
@@ -23,16 +23,25 @@ const saveConfigBtn = document.getElementById('saveConfigBtn');
 
 // 自动调整textarea高度
 function autoResizeTextarea() {
-    messageInput.style.height = 'auto';
-    messageInput.style.height = messageInput.scrollHeight + 'px';
+  messageInput.style.height = 'auto';
+  const computedStyle = window.getComputedStyle(messageInput);
+  const minHeight = parseInt(computedStyle.minHeight, 10);
+  const maxHeight = 200;
+  const scrollHeight = messageInput.scrollHeight;
+  let newHeight = Math.max(minHeight, Math.min(scrollHeight, maxHeight));
+  messageInput.style.height = `${newHeight}px`;
 }
 
-// 为textarea添加输入事件监听
+// 重置textarea高度
+function resetTextareaHeight() {
+  messageInput.style.height = 'auto';
+  messageInput.style.height = `${messageInput.scrollHeight}px`;
+}
+
 messageInput.addEventListener('input', autoResizeTextarea);
 
 // 刷新模型选项
 function refreshModelOptions(provider) {
-  const modelSelect = document.getElementById('modelSelect');
   modelSelect.innerHTML = '';
   if (API_PROVIDERS[provider].models) {
     API_PROVIDERS[provider].models.forEach(model => {
@@ -47,50 +56,63 @@ function refreshModelOptions(provider) {
 // 处理API提供商变更
 function handleProviderChange() {
   const provider = providerSelect.value;
-  const modelSelectGroup = document.getElementById('modelSelectGroup');
-  modelSelectGroup.style.display = 'block';
+  document.getElementById('modelSelectGroup').style.display = 'block';
   refreshModelOptions(provider);
   
-  // 自动保存选择的模型
-  if (provider === 'DEEPSEEK') {
-    const model = modelSelect.value;
-    localStorage.setItem('model', model);
+  const selectedModel = modelSelect.value;
+  if (selectedModel) {
+    localStorage.setItem('model', selectedModel); 
   }
 }
 
-// 消息模板
-function createMessageElement(content, isUser = true) {
+// 创建消息元素
+function createMessageElement(content, isUser = true, isReasoning = false) {
   const div = document.createElement('div');
   div.className = `message ${isUser ? 'user-message' : 'assistant-message'}`;
-  div.innerHTML = marked.parse(content);
+  
+  if (isReasoning) {
+    const reasoningHeader = document.createElement('div');
+    reasoningHeader.className = 'reasoning-header';
+    reasoningHeader.textContent = '推理过程：';
+    div.appendChild(reasoningHeader);
+  }
+  
+  div.innerHTML += marked.parse(content);
   return div;
 }
 
 // 滚动到底部
 function scrollToBottom() {
-    const threshold = 50; // 距离底部的阈值
-    const isNearBottom = chatHistory.scrollHeight - chatHistory.scrollTop - chatHistory.clientHeight <= threshold;
-    if (isNearBottom) {
-        chatHistory.scrollTop = chatHistory.scrollHeight;
-    }
+  const threshold = 50;
+  const isNearBottom = chatHistory.scrollHeight - chatHistory.scrollTop - chatHistory.clientHeight <= threshold;
+  if (isNearBottom) {
+    chatHistory.scrollTop = chatHistory.scrollHeight;
+  }
+}
+
+// 检查必填配置
+function validateRequiredConfig() {
+  const apiKey = localStorage.getItem('api-key');
+  const model = localStorage.getItem('model');
+  if (!apiKey || !model) {
+    alert('请先配置API');
+    configModal.style.display = 'block';
+    return false;
+  }
+  return true;
 }
 
 // 显示配置模态框
 showConfigBtn.addEventListener('click', () => {
   configModal.style.display = 'block';
   apiKeyInput.value = localStorage.getItem('api-key') || '';
-  if (providerSelect.value === 'DEEPSEEK') {
-    modelSelect.value = localStorage.getItem('model') || '';
-  } else {
-    modelSelect.value = localStorage.getItem('model') || '';
-  }
+  modelSelect.value = localStorage.getItem('model') || '';
 });
 
 // 关闭模态框
 document.querySelector('.close').addEventListener('click', () => {
   configModal.style.display = 'none';
 });
-
 
 // 保存配置
 function saveConfig() {
@@ -114,100 +136,79 @@ function saveConfig() {
 providerSelect.addEventListener('change', handleProviderChange);
 saveConfigBtn.addEventListener('click', saveConfig);
 sendBtn.addEventListener('click', sendMessage);
-// 输入框处理逻辑：Enter发送消息，Shift+Enter换行
+
+// 输入框处理
 messageInput.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter' && !e.shiftKey) {
-    e.preventDefault();
-    sendMessage();
-  } else if (e.key === 'Enter' && e.shiftKey) {
-    autoResizeTextarea();
+  if (e.key === 'Enter') {
+    if (e.ctrlKey || e.metaKey) {
+      e.preventDefault();
+      sendMessage();
+    } else {
+      document.execCommand('insertText', false);
+      autoResizeTextarea();
+    }
   }
 });
 
-// 绑定取消按钮点击事件
-document.getElementById('cancelBtn').addEventListener('click', cancelMessage);
-
-// 固定内容定义
+// 固定内容
 const FIXED_CONTENT = '请回答以下问题，如果句子太长注意分句，另外用markdown组织回答内容：\n';
 
-// AbortController实例
 let abortController;
 
 // 取消消息
 function cancelMessage() {
-    if (abortController) {
-        abortController.abort();
-        abortController = null;
-    }
-    sendBtn.disabled = false;
-    messageInput.disabled = false;
-    cancelBtn.style.display = 'none';
+  if (abortController) {
+    abortController.abort();
+    abortController = null;
+  }
+  sendBtn.disabled = false;
+  messageInput.disabled = false;
+  document.getElementById('cancelBtn').style.display = 'none';
 }
 
 // 发送消息
 async function sendMessage() {
-    // 初始化AbortController
-    abortController = new AbortController();
-    const messageText = messageInput.value.trim();
-    
-    // 去除消息结尾的换行符
-    sendBtn.disabled = true;
-    messageInput.disabled = true;
-    cancelBtn.style.display = 'inline-block';
-  console.log("Starting sendMessage");
-  
-  // 拼接固定内容
-  const formattedMessage = FIXED_CONTENT + messageText;
-  
-  const apiKey = localStorage.getItem('api-key');
-  const provider = providerSelect.value;
-  const model = localStorage.getItem('model');
+  if (!validateRequiredConfig()) return;
 
+  abortController = new AbortController();
+  const messageText = messageInput.value.trim();
+  
   if (!messageText) return;
-  if (!apiKey || !model) {
-    alert('请先配置API');
-    configModal.style.display = 'block';
-    return;
-  }
 
+  sendBtn.disabled = true;
+  messageInput.disabled = true;
+  document.getElementById('cancelBtn').style.display = 'inline-block';
+  console.log("Starting sendMessage");
+
+  const formattedMessage = FIXED_CONTENT + messageText;
   messageInput.value = '';
+  resetTextareaHeight();
   chatHistory.appendChild(createMessageElement(formattedMessage, true));
   scrollToBottom();
 
   const assistantMessageContainer = createMessageElement('', false);
   chatHistory.appendChild(assistantMessageContainer);
 
-  // 构建消息数组
-  const messages = [
-    {
-      role: "user",
-      content: formattedMessage
-    }
-  ];
-  
   try {
-
-    const response = await fetch(API_PROVIDERS[provider].endpoint, {
-        method: 'POST',
-        signal: abortController.signal,
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${apiKey}`
+    const response = await fetch(API_PROVIDERS[providerSelect.value].endpoint, {
+      method: 'POST',
+      signal: abortController.signal,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('api-key')}`
       },
       body: JSON.stringify({
-        model: model,
-        messages: messages,
+        model: localStorage.getItem('model'),
+        messages: [{ role: "user", content: formattedMessage }],
         temperature: 0.7,
         stream: true
       })
     });
 
-    // 处理流式响应
     const reader = response.body.getReader();
     const decoder = new TextDecoder();
     let responseText = '';
-    
-    // 创建 Markdown 渲染容器
+    let reasoningText = '';
     const markdownContainer = document.createElement('div');
     assistantMessageContainer.appendChild(markdownContainer);
 
@@ -217,28 +218,38 @@ async function sendMessage() {
 
       const chunk = decoder.decode(value, { stream: true });
       const lines = chunk.split('\n').filter(line => line.trim() !== '');
-      
+
       for (const line of lines) {
         if (line.startsWith('data: ')) {
           const data = line.replace('data: ', '');
           if (data !== '[DONE]') {
             try {
               const jsonData = JSON.parse(data);
-              if (jsonData.choices && jsonData.choices[0].delta) {
-                if (jsonData.choices[0].delta.reasoning_content) {
-                  responseText += jsonData.choices[0].delta.reasoning_content;
-                } else if (jsonData.choices[0].delta.content) {
-                  responseText += jsonData.choices[0].delta.content;
-                }
-                // 使用 innerHTML 保持格式
-                markdownContainer.innerHTML = marked.parse(responseText);
-                scrollToBottom();
-              } else if (jsonData.error) {
+              if (jsonData.error) {
                 throw new Error(jsonData.error.message);
               }
+
+              if (jsonData.choices && jsonData.choices[0].delta) {
+                if (jsonData.choices[0].delta.reasoning_content) {
+                  reasoningText += jsonData.choices[0].delta.reasoning_content;
+                  const reasoningMessage = createMessageElement(reasoningText, false, true);
+                  reasoningMessage.classList.add('reasoning-content');
+                  markdownContainer.innerHTML = reasoningMessage.innerHTML;
+                }
+
+                if (jsonData.choices[0].delta.content) {
+                responseText += jsonData.choices[0].delta.content;
+                const reasoningMessage = reasoningText ? createMessageElement(reasoningText, false, true) : null;
+                const normalMessage = createMessageElement(responseText, false);
+                markdownContainer.innerHTML = reasoningMessage ?
+                  `${reasoningMessage.innerHTML}<div class="normal-reply">${marked.parse(responseText)}</div>` :
+                  marked.parse(responseText);
+              }
+              }
+              scrollToBottom();
             } catch (error) {
-              console.error('Error parsing chunk:', error);
-              assistantMessageContainer.textContent = '错误：无法解析响应数据';
+              console.error('Error processing response:', error);
+              assistantMessageContainer.textContent = `错误：无法处理响应数据 (${error.message})`;
             }
           }
         } else if (line.startsWith('event: error')) {
@@ -247,20 +258,18 @@ async function sendMessage() {
       }
     }
   } catch (error) {
-      if (error.name === 'AbortError') {
-          assistantMessageContainer.textContent = '操作已取消';
-          console.log('请求被取消');
-      } else {
-          assistantMessageContainer.textContent = `错误：${error.message}`;
-          console.error('请求失败', error);
-      }
-      sendBtn.disabled = false;
-      messageInput.disabled = false;
-      cancelBtn.style.display = 'none';
-      messageInput.focus();
+    if (error.name === 'AbortError') {
+      assistantMessageContainer.textContent = '操作已取消';
+      console.log('请求被取消');
+    } else {
+      assistantMessageContainer.textContent = `错误：${error.message}`;
+      console.error('请求失败', error);
+    }
+  } finally {
+    sendBtn.disabled = false;
+    messageInput.disabled = false;
+    document.getElementById('cancelBtn').style.display = 'none';
+    messageInput.focus();
+    scrollToBottom();
   }
-  sendBtn.disabled = false;
-  messageInput.disabled = false;
-  cancelBtn.style.display = 'none';
-  scrollToBottom();
 }

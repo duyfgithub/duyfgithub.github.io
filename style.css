@@ -83,17 +83,17 @@ button:hover {
     overflow-y: auto;
     padding: 20px;
 }
+
 .message {
     margin: 10px 0;
     padding: 10px;
     border-radius: 8px;
     max-width: 80%;
     animation: fadeIn 0.3s ease-in;
-    font-weight: 400; /* 重置字体粗细 */
+    font-weight: 400;
     white-space: pre-wrap;
 }
 
-/* 列表样式 */
 .message ol, .message ul {
     margin: 0.5em 0;
     padding-left: 2em;
@@ -105,8 +105,9 @@ button:hover {
     padding: 0.2em 0;
     word-break: break-word;
 }
+
 .message strong, .message b {
-    font-weight: 600; /* 确保加粗效果 */
+    font-weight: 600;
 }
 
 .user-message {
@@ -118,7 +119,31 @@ button:hover {
 .assistant-message {
     background: white;
     margin-right: auto;
-    border: 1px solid #d9d9d9;
+    border: 1px set #d9d9d9;
+}
+
+.reasoning-header {
+    font-size: 0.9em;
+    color: #666;
+    margin-bottom: 5px;
+    padding: 5px;
+    border-bottom: 1px solid #eee;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+}
+
+.reasoning-content {
+    font-size: 0.9em;
+    color: #333;
+    padding: 10px;
+    margin-top: 5px;
+    line-height: 1.6;
+}
+
+.normal-reply {
+    color: #333;
+    font-size: 1em;
+    margin-top: 10px;
 }
 
 .input-area {
@@ -137,6 +162,7 @@ button:hover {
     resize: none;
     min-height: 38px;
     overflow: hidden;
+    transition: height 0.15s ease;
 }
 
 #messageInput:focus {
@@ -163,7 +189,6 @@ button:hover {
     }
 }
 
-/* iOS-specific styles */
 @supports (-webkit-touch-callout: none) {
     body {
         padding-top: env(safe-area-inset-top);
@@ -177,6 +202,13 @@ button:hover {
     .chat-container {
         height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
     }
+
+    #messageInput {
+        -webkit-user-select: text;
+        user-select: text;
+        min-height: 44px;
+        line-height: 1.5;
+    }
 }
 
 @media (max-width: 768px) {
@@ -189,7 +221,6 @@ button:hover {
     }
 }
 
-/* Markdown styles */
 strong, b {
     font-weight: bold;
 }
