@@ -116,9 +116,9 @@ button:hover {
 }
 
 .assistant-message {
-    background: #f6ffed;
+    background: white;
     margin-right: auto;
-    border: 1px solid #b7eb8f;
+    border: 1px solid #d9d9d9;
 }
 
 .input-area {
