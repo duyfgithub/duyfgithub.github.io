@@ -90,15 +90,23 @@ button:hover {
     max-width: 80%;
     animation: fadeIn 0.3s ease-in;
     font-weight: 400; /* 重置字体粗细 */
+    white-space: pre-wrap;
 }
 
-.message strong, .message b {
-    font-weight: 600; /* 确保加粗效果 */
+/* 列表样式 */
+.message ol, .message ul {
+    margin: 0.5em 0;
+    padding-left: 2em;
+    padding-right: 1em;
+    overflow: hidden;
 }
 
+.message li {
+    padding: 0.2em 0;
+    word-break: break-word;
+}
 .message strong, .message b {
     font-weight: 600; /* 确保加粗效果 */
-}
 }
 
 .user-message {
@@ -126,6 +134,9 @@ button:hover {
     border: 1px solid #ddd;
     border-radius: 4px;
     font-size: 16px;
+    resize: none;
+    min-height: 38px;
+    overflow: hidden;
 }
 
 #messageInput:focus {

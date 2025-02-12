@@ -21,6 +21,15 @@ const modelSelect = document.getElementById('modelSelect');
 const apiKeyInput = document.getElementById('apiKeyInput');
 const saveConfigBtn = document.getElementById('saveConfigBtn');
 
+// 自动调整textarea高度
+function autoResizeTextarea() {
+    messageInput.style.height = 'auto';
+    messageInput.style.height = messageInput.scrollHeight + 'px';
+}
+
+// 为textarea添加输入事件监听
+messageInput.addEventListener('input', autoResizeTextarea);
+
 // 刷新模型选项
 function refreshModelOptions(provider) {
   const modelSelect = document.getElementById('modelSelect');
@@ -73,7 +82,7 @@ showConfigBtn.addEventListener('click', () => {
   if (providerSelect.value === 'DEEPSEEK') {
     modelSelect.value = localStorage.getItem('model') || '';
   } else {
-    modelInput.value = localStorage.getItem('model') || '';
+    modelSelect.value = localStorage.getItem('model') || '';
   }
 });
 
@@ -105,8 +114,14 @@ function saveConfig() {
 providerSelect.addEventListener('change', handleProviderChange);
 saveConfigBtn.addEventListener('click', saveConfig);
 sendBtn.addEventListener('click', sendMessage);
-messageInput.addEventListener('keypress', (e) => {
-  if (e.key === 'Enter') sendMessage();
+// 输入框处理逻辑：Enter发送消息，Shift+Enter换行
+messageInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  } else if (e.key === 'Enter' && e.shiftKey) {
+    autoResizeTextarea();
+  }
 });
 
 // 绑定取消按钮点击事件
@@ -133,20 +148,22 @@ function cancelMessage() {
 async function sendMessage() {
     // 初始化AbortController
     abortController = new AbortController();
+    const messageText = messageInput.value.trim();
+    
+    // 去除消息结尾的换行符
     sendBtn.disabled = true;
     messageInput.disabled = true;
     cancelBtn.style.display = 'inline-block';
   console.log("Starting sendMessage");
-  let message = messageInput.value.trim();
   
   // 拼接固定内容
-  message = FIXED_CONTENT + message;
+  const formattedMessage = FIXED_CONTENT + messageText;
   
   const apiKey = localStorage.getItem('api-key');
   const provider = providerSelect.value;
   const model = localStorage.getItem('model');
 
-  if (!message) return;
+  if (!messageText) return;
   if (!apiKey || !model) {
     alert('请先配置API');
     configModal.style.display = 'block';
@@ -154,7 +171,7 @@ async function sendMessage() {
   }
 
   messageInput.value = '';
-  chatHistory.appendChild(createMessageElement(message, true));
+  chatHistory.appendChild(createMessageElement(formattedMessage, true));
   scrollToBottom();
 
   const assistantMessageContainer = createMessageElement('', false);
@@ -164,7 +181,7 @@ async function sendMessage() {
   const messages = [
     {
       role: "user",
-      content: message
+      content: formattedMessage
     }
   ];
   
