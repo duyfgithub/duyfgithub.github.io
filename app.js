@@ -24,12 +24,9 @@ const saveConfigBtn = document.getElementById('saveConfigBtn');
 // 自动调整textarea高度
 function autoResizeTextarea() {
   messageInput.style.height = 'auto';
-  const computedStyle = window.getComputedStyle(messageInput);
-  const minHeight = parseInt(computedStyle.minHeight, 10);
-  const maxHeight = 200;
-  const scrollHeight = messageInput.scrollHeight;
-  let newHeight = Math.max(minHeight, Math.min(scrollHeight, maxHeight));
-  messageInput.style.height = `${newHeight}px`;
+  const minHeight = 44; // 设置最小高度以适应移动端触摸屏
+  const maxHeight = 400; // 设置最大高度
+  messageInput.style.height = `${Math.min(Math.max(minHeight, messageInput.scrollHeight), maxHeight)}px`;
 }
 
 // 重置textarea高度
@@ -136,6 +133,7 @@ function saveConfig() {
 providerSelect.addEventListener('change', handleProviderChange);
 saveConfigBtn.addEventListener('click', saveConfig);
 sendBtn.addEventListener('click', sendMessage);
+document.getElementById('cancelBtn').addEventListener('click', cancelMessage);
 
 // 输入框处理
 messageInput.addEventListener('keydown', (e) => {
@@ -154,6 +152,17 @@ messageInput.addEventListener('keydown', (e) => {
 const FIXED_CONTENT = '请回答以下问题，如果句子太长注意分句，另外用markdown组织回答内容：\n';
 
 let abortController;
+
+// 取消消息
+function cancelMessage() {
+  if (abortController) {
+    abortController.abort();
+    abortController = null;
+  }
+  sendBtn.disabled = false;
+  messageInput.disabled = false;
+  document.getElementById('cancelBtn').style.display = 'none';
+}
 
 // 取消消息
 function cancelMessage() {

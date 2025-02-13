@@ -7,11 +7,12 @@
 
 body {
     background-color: #f0f2f5;
+    overflow: hidden;
 }
 
 .container {
     max-width: 800px;
-    margin: 20px auto;
+    margin: 40px auto;
     padding: 20px;
 }
 
@@ -19,7 +20,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     background: #1677ff;
     padding: 15px;
     border-radius: 8px;
@@ -62,6 +63,7 @@ button:hover {
     max-width: 400px;
     border-radius: 8px;
     position: relative;
+    overflow-y: auto;
 }
 
 .close {
@@ -76,6 +78,7 @@ button:hover {
     background: white;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    min-height: calc(100vh - 300px);
 }
 
 .chat-history {
@@ -151,6 +154,7 @@ button:hover {
     gap: 10px;
     padding: 20px;
     border-top: 1px solid #eee;
+    max-height: calc(100vh - 300px);
 }
 
 #messageInput {
@@ -159,10 +163,10 @@ button:hover {
     border: 1px solid #ddd;
     border-radius: 4px;
     font-size: 16px;
-    resize: none;
-    min-height: 38px;
-    overflow: hidden;
+    resize: vertical;
+    overflow: auto;
     transition: height 0.15s ease;
+    max-height: 130px;
 }
 
 #messageInput:focus {
