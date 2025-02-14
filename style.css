@@ -154,7 +154,7 @@ button:hover {
     gap: 10px;
     padding: 20px;
     border-top: 1px solid #eee;
-    max-height: calc(100vh - 500px);
+    margin-top: auto;
 }
 
 #messageInput {
