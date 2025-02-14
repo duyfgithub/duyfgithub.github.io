@@ -9,8 +9,8 @@ body {
     background-color: #f0f2f5;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-    margin-top: 40px;
-    padding-top: 20px;
+    margin: 0;
+    padding: 0;
 }
 
 .container {
@@ -199,8 +199,9 @@ button:hover {
 
 @supports (-webkit-touch-callout: none) {
     body {
+        padding-top: env(safe-area-inset-top);
         padding-bottom: env(safe-area-inset-bottom);
-        margin-top: 10px;
+        margin-top: 0;
     }
     
     .header {
@@ -208,7 +209,7 @@ button:hover {
     }
     
     .chat-container {
-        margin-top: 10px;
+        margin-top: 0;
     }
 
     #messageInput {
