@@ -195,12 +195,11 @@ button:hover {
 
 @supports (-webkit-touch-callout: none) {
     body {
-        padding-top: env(safe-area-inset-top);
         padding-bottom: env(safe-area-inset-bottom);
     }
     
     .header {
-        padding-top: calc(15px + env(safe-area-inset-top));
+        padding-top: 15px;
     }
     
     .chat-container {
