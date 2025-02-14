@@ -7,7 +7,8 @@
 
 body {
     background-color: #f0f2f5;
-    overflow: auto;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 .container {
