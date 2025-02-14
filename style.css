@@ -199,7 +199,7 @@ button:hover {
 @supports (-webkit-touch-callout: none) {
     body {
         padding-bottom: env(safe-area-inset-bottom);
-        margin-top: -40px;
+        margin-top: -60px;
     }
     
     .header {
