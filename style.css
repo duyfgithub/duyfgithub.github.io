@@ -9,7 +9,7 @@ body {
     background-color: #f0f2f5;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-    margin-top: 20px;
+    margin-top: 40px;
     padding-top: 20px;
 }
 
@@ -199,7 +199,7 @@ button:hover {
 @supports (-webkit-touch-callout: none) {
     body {
         padding-bottom: env(safe-area-inset-bottom);
-        margin-top: 20px;
+        margin-top: 40px;
     }
     
     .header {
