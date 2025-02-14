@@ -125,7 +125,7 @@ button:hover {
 .assistant-message {
     background: white;
     margin-right: auto;
-    border: 1px set #d9d9d9;
+    border: 1px solid #d9d9d9;
 }
 
 .reasoning-header {
@@ -199,7 +199,7 @@ button:hover {
 @supports (-webkit-touch-callout: none) {
     body {
         padding-bottom: env(safe-area-inset-bottom);
-        margin-top: -60px;
+        margin-top: -50px;
     }
     
     .header {
