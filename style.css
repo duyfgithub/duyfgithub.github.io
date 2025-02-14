@@ -207,7 +207,7 @@ button:hover {
     .header {
         padding-top: env(safe-area-inset-top);
         min-height: calc(50px + env(safe-area-inset-top));
-        border-radius: 0;
+        border-radius: 0 !important;
     }
     
     .chat-container {
