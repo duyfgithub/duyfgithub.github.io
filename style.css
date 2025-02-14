@@ -163,14 +163,16 @@ button:hover {
 
 #messageInput {
     flex: 1;
-    padding: 10px;
+    padding: 12px 15px;
     border: 1px solid #ddd;
     border-radius: 4px;
     font-size: 16px;
     resize: vertical;
     overflow: auto;
     transition: height 0.15s ease;
-    max-height: 130px;
+    min-height: 44px;
+    max-height: 173px;
+    line-height: 1.5;
 }
 
 #messageInput:focus {
