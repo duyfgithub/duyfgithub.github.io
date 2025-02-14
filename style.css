@@ -207,7 +207,7 @@ button:hover {
     }
     
     .chat-container {
-        /* 移除固定高度 */
+        margin-top: 40px;
     }
 
     #messageInput {
