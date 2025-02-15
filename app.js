@@ -136,6 +136,11 @@ sendBtn.addEventListener('click', sendMessage);
 document.getElementById('cancelBtn').addEventListener('click', cancelMessage);
 
 // 输入框处理
+// 检测iPad设备
+function isIPad() {
+  return navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1;
+}
+
 messageInput.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') {
     if (e.ctrlKey || e.metaKey) {
@@ -144,9 +149,11 @@ messageInput.addEventListener('keydown', (e) => {
     } else {
       document.execCommand('insertText', false);
       autoResizeTextarea();
-      setTimeout(() => {
-        messageInput.scrollIntoView({block: 'center', behavior: 'smooth'});
-      }, 50);
+      if (isIPad()) {
+        setTimeout(() => {
+          messageInput.scrollIntoView({block: 'nearest'});
+        }, 50);
+      }
     }
   }
 });
