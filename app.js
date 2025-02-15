@@ -144,6 +144,9 @@ messageInput.addEventListener('keydown', (e) => {
     } else {
       document.execCommand('insertText', false);
       autoResizeTextarea();
+      setTimeout(() => {
+        messageInput.scrollIntoView({block: 'center', behavior: 'smooth'});
+      }, 50);
     }
   }
 });
