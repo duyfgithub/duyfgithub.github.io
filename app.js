@@ -141,6 +141,28 @@ function isIPad() {
   return navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1;
 }
 
+// 初始化visualViewport处理（处理键盘弹出）
+function initViewportHandler() {
+  if (!isIPad()) return;
+
+  const updateViewport = () => {
+    const viewport = window.visualViewport;
+    const keyboardHeight = window.innerHeight - viewport.height;
+    document.documentElement.style.setProperty('--keyboard-height', `${keyboardHeight}px`);
+    
+    // 自动滚动到输入框
+    if (keyboardHeight > 100 && document.activeElement === messageInput) {
+      requestAnimationFrame(() => {
+        messageInput.scrollIntoView({block: 'end', behavior: 'auto'});
+      });
+    }
+  };
+
+  window.visualViewport.addEventListener('resize', updateViewport);
+  window.visualViewport.addEventListener('scroll', updateViewport);
+  updateViewport(); // 初始化调用
+}
+
 // 防抖函数
 function debounce(func, delay) {
   let timeoutId;
