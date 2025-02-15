@@ -154,11 +154,14 @@ function debounce(func, delay) {
 const handleIPadScroll = debounce(() => {
   requestAnimationFrame(() => {
     const inputRect = messageInput.getBoundingClientRect();
-    const offset = window.innerHeight - inputRect.bottom - 50; // 50px安全边距
-    window.scrollBy({
-      top: offset,
-      behavior: 'auto'
-    });
+    const viewportBottom = window.innerHeight - 300; // 假设键盘高度约300px
+    if (inputRect.bottom > viewportBottom) {
+      const offset = inputRect.bottom - viewportBottom + 10; // 10px缓冲
+      window.scrollBy({
+        top: offset,
+        behavior: 'auto'
+      });
+    }
   });
 }, 100);
 
