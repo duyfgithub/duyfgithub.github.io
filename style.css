@@ -164,7 +164,8 @@ button:hover {
 #messageInput {
     flex: 1;
     padding: 12px 15px;
-    will-change: transform;
+    height: 44px;
+    overflow-y: auto;
     border: 1px solid #ddd;
     border-radius: 4px;
     font-size: 16px;

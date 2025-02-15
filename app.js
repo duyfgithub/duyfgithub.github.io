@@ -23,17 +23,8 @@ const saveConfigBtn = document.getElementById('saveConfigBtn');
 
 // 优化高度调整（使用transform避免布局抖动）
 function autoResizeTextarea() {
-  const minHeight = 44;
-  const maxHeight = 400;
-  const scrollHeight = messageInput.scrollHeight;
-  const newHeight = Math.min(Math.max(minHeight, scrollHeight), maxHeight);
-  const heightDiff = newHeight - messageInput.offsetHeight;
-  
-  messageInput.style.transform = `translateY(${heightDiff}px)`;
-  requestAnimationFrame(() => {
-    messageInput.style.height = `${newHeight}px`;
-    messageInput.style.transform = '';
-  });
+  // 保持固定高度，使用内部滚动
+  messageInput.style.height = '44px';
 }
 
 // 重置textarea高度
