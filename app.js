@@ -21,17 +21,32 @@ const modelSelect = document.getElementById('modelSelect');
 const apiKeyInput = document.getElementById('apiKeyInput');
 const saveConfigBtn = document.getElementById('saveConfigBtn');
 
-// 优化高度调整（使用transform避免布局抖动）
+// 维护输入法状态
+let isComposing = false;
+
+// 优化高度调整（自动收缩）
 function autoResizeTextarea() {
-  // 设置最小高度匹配键盘高度
-  messageInput.style.height = '200px'; // 用户指定高度
+  // 当内容为空且输入法关闭时，恢复最小高度
+  if (messageInput.value.trim() === '' && !isComposing) {
+    messageInput.style.height = '44px';
+    return;
+  }
+  
+  // 动态调整高度
+  messageInput.style.height = 'auto';
+  const newHeight = Math.min(messageInput.scrollHeight, parseInt(getComputedStyle(messageInput).maxHeight));
+  messageInput.style.height = `${newHeight}px`;
 }
 
-// 重置textarea高度
-function resetTextareaHeight() {
-  messageInput.style.height = 'auto';
-  messageInput.style.height = `${messageInput.scrollHeight}px`;
-}
+// 监听输入法状态
+messageInput.addEventListener('compositionstart', () => {
+  isComposing = true;
+});
+
+messageInput.addEventListener('compositionend', () => {
+  isComposing = false;
+  autoResizeTextarea(); // 输入法关闭后重新计算高度
+});
 
 messageInput.addEventListener('input', autoResizeTextarea);
 
