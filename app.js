@@ -21,12 +21,19 @@ const modelSelect = document.getElementById('modelSelect');
 const apiKeyInput = document.getElementById('apiKeyInput');
 const saveConfigBtn = document.getElementById('saveConfigBtn');
 
-// 自动调整textarea高度
+// 优化高度调整（使用transform避免布局抖动）
 function autoResizeTextarea() {
-  messageInput.style.height = 'auto';
-  const minHeight = 44; // 设置最小高度以适应移动端触摸屏
-  const maxHeight = 400; // 设置最大高度
-  messageInput.style.height = `${Math.min(Math.max(minHeight, messageInput.scrollHeight), maxHeight)}px`;
+  const minHeight = 44;
+  const maxHeight = 400;
+  const scrollHeight = messageInput.scrollHeight;
+  const newHeight = Math.min(Math.max(minHeight, scrollHeight), maxHeight);
+  const heightDiff = newHeight - messageInput.offsetHeight;
+  
+  messageInput.style.transform = `translateY(${heightDiff}px)`;
+  requestAnimationFrame(() => {
+    messageInput.style.height = `${newHeight}px`;
+    messageInput.style.transform = '';
+  });
 }
 
 // 重置textarea高度
