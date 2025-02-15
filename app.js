@@ -150,10 +150,15 @@ function debounce(func, delay) {
   };
 }
 
-// 优化后的滚动处理
+// 优化后的滚动处理（添加偏移补偿）
 const handleIPadScroll = debounce(() => {
   requestAnimationFrame(() => {
-    messageInput.scrollIntoView({block: 'end', behavior: 'auto'});
+    const inputRect = messageInput.getBoundingClientRect();
+    const offset = window.innerHeight - inputRect.bottom - 50; // 50px安全边距
+    window.scrollBy({
+      top: offset,
+      behavior: 'auto'
+    });
   });
 }, 100);
 
