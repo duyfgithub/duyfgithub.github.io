@@ -141,6 +141,22 @@ function isIPad() {
   return navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1;
 }
 
+// 防抖函数
+function debounce(func, delay) {
+  let timeoutId;
+  return (...args) => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => func.apply(this, args), delay);
+  };
+}
+
+// 优化后的滚动处理
+const handleIPadScroll = debounce(() => {
+  requestAnimationFrame(() => {
+    messageInput.scrollIntoView({block: 'end', behavior: 'auto'});
+  });
+}, 100);
+
 messageInput.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') {
     if (e.ctrlKey || e.metaKey) {
@@ -150,9 +166,7 @@ messageInput.addEventListener('keydown', (e) => {
       document.execCommand('insertText', false);
       autoResizeTextarea();
       if (isIPad()) {
-        setTimeout(() => {
-          messageInput.scrollIntoView({block: 'nearest'});
-        }, 50);
+        handleIPadScroll();
       }
     }
   }
