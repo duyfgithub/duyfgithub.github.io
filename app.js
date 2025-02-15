@@ -24,7 +24,7 @@ const saveConfigBtn = document.getElementById('saveConfigBtn');
 // 优化高度调整（使用transform避免布局抖动）
 function autoResizeTextarea() {
   // 设置最小高度匹配键盘高度
-  messageInput.style.height = '240px'; // 优化后的固定高度
+  messageInput.style.height = '200px'; // 用户指定高度
 }
 
 // 重置textarea高度
