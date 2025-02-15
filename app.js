@@ -231,17 +231,6 @@ function cancelMessage() {
   document.getElementById('cancelBtn').style.display = 'none';
 }
 
-// 取消消息
-function cancelMessage() {
-  if (abortController) {
-    abortController.abort();
-    abortController = null;
-  }
-  sendBtn.disabled = false;
-  messageInput.disabled = false;
-  document.getElementById('cancelBtn').style.display = 'none';
-}
-
 // 发送消息
 async function sendMessage() {
   if (!validateRequiredConfig()) return;
@@ -258,7 +247,7 @@ async function sendMessage() {
 
   const formattedMessage = FIXED_CONTENT + messageText;
   messageInput.value = '';
-  resetTextareaHeight();
+  autoResizeTextarea();
   chatHistory.appendChild(createMessageElement(formattedMessage, true));
   scrollToBottom();
 
