@@ -164,9 +164,10 @@ button:hover {
 #messageInput {
     flex: 1;
     padding: 12px 15px;
-    height: 328px;
-    min-height: 328px;
+    height: 240px;
+    min-height: 240px;
     overflow-y: auto;
+    max-height: calc(100vh - 200px); /* 留出标题栏和间距 */
     border: 1px solid #ddd;
     border-radius: 4px;
     font-size: 16px;
