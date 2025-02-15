@@ -82,13 +82,30 @@ button:hover {
     background: white;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    min-height: calc(100vh - 500px);
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 140px); /* 默认全屏高度 */
+    
+    @media (max-width: 768px) and (orientation: portrait) {
+        height: calc(100vh - 100px); /* 竖屏分屏高度 */
+    }
+    @media (max-width: 1024px) and (orientation: landscape) {
+        height: calc(70vh - 60px); /* 横屏分屏高度 */
+    }
 }
 
 .chat-history {
-    height: 60vh;
+    flex: 1;
     overflow-y: auto;
     padding: 20px;
+    height: calc(100% - 120px); /* 动态计算高度 */
+    
+    @media (max-width: 768px) and (orientation: portrait) {
+        height: calc(100% - 80px);
+    }
+    @media (max-width: 1024px) and (orientation: landscape) {
+        height: calc(100% - 100px);
+    }
 }
 
 .message {
@@ -164,19 +181,23 @@ button:hover {
 #messageInput {
     flex: 1;
     padding: 12px 15px;
-    height: 200px;
-    min-height: 200px;
+    min-height: 44px;
     overflow-y: auto;
-    max-height: calc(100vh - 200px); /* 留出标题栏和间距 */
+    max-height: calc(100vh - 150px); /* 全屏模式下的最大高度 */
     border: 1px solid #ddd;
     border-radius: 4px;
     font-size: 16px;
     resize: vertical;
     overflow: auto;
-    transition: height 0.15s ease;
-    min-height: 44px;
-    max-height: 173px;
+    transition: all 0.15s ease;
     line-height: 1.5;
+    /* 分屏模式适配 */
+    @media (max-width: 768px) and (orientation: portrait) {
+        max-height: calc(50vh - 60px);
+    }
+    @media (max-width: 1024px) and (orientation: landscape) {
+        max-height: calc(70vh - 80px);
+    }
 }
 
 #messageInput:focus {
